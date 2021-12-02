@@ -14,13 +14,36 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.runner;
+package org.kie.kogito.jitexecutor.api.requests;
 
-import org.kie.kogito.jitexecutor.process.api.ProcessResourceTest;
+public class SendEventRequest {
 
-import io.quarkus.test.junit.NativeImageTest;
+    private String event;
 
-@NativeImageTest
-public class NativeJITBPMNResourceIT extends ProcessResourceTest {
-    // Execute the same tests but in native mode.
+    private Object payload;
+
+    public SendEventRequest() {
+        // do nothing
+    }
+
+    public SendEventRequest(String event, Object payload) {
+        this.event = event;
+        this.payload = payload;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
+    }
 }

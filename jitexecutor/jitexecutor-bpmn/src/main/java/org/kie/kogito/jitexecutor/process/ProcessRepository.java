@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.bpmn.requests;
+package org.kie.kogito.jitexecutor.process;
 
-public interface Interaction {
+import java.util.List;
+
+public interface ProcessRepository {
+
+    List<ProcessFile> processes();
 
 }

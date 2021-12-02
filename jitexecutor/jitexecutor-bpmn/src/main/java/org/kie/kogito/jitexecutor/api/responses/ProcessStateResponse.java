@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.bpmn.requests;
+package org.kie.kogito.jitexecutor.api.responses;
 
 import java.util.Map;
 
-public class CompleteWork implements Interaction {
+public class ProcessStateResponse {
 
-    private String nodeName;
-    private Map<String, Object> data;
+    private Map<String, Object> variables;
 
-    public CompleteWork() {
+    public ProcessStateResponse(Map<String, Object> variables) {
+        this.variables = variables;
     }
 
-    public CompleteWork(String nodeName, Map<String, Object> data) {
-        this.nodeName = nodeName;
-        this.data = data;
+    public Map<String, Object> getVariables() {
+        return variables;
     }
 
-    public String getNodeName() {
-        return nodeName;
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
     }
-
-    public Map<String, Object> getData() {
-        return data;
-    }
-
 }

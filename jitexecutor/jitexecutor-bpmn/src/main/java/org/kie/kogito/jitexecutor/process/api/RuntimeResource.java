@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.bpmn.api;
-
-import java.util.ArrayList;
+package org.kie.kogito.jitexecutor.process.api;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,33 +24,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kie.kogito.jitexecutor.bpmn.JITBPMNService;
-import org.kie.kogito.jitexecutor.bpmn.requests.Interaction;
-import org.kie.kogito.jitexecutor.bpmn.requests.JITBPMNPayload;
+import org.kie.kogito.jitexecutor.api.requests.SendEventRequest;
+import org.kie.kogito.jitexecutor.process.JITProcessService;
 
-@Path("/jitbpmn")
-public class JITBPMNResource {
+@Path("/runtime")
+public class RuntimeResource {
 
     @Inject
-    JITBPMNService jitbpmnService;
+    protected JITProcessService jitProcessService;
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response jitEvaluateAndAudit(JITBPMNPayload payload) {
-        Object response = jitbpmnService.startProcessWithAudit(
-                payload.getModel(), payload.getParameters(),
-                payload.getInteractions() == null ? null : new ArrayList<Interaction>(payload.getInteractions()));
-        return Response.ok(response).build();
+    @Path("/compile")
+    public Response compile() {
+        jitProcessService.compile();
+        return Response.ok().build();
     }
 
+    // sends an event to runtime
     @POST
-    @Path("/validate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response jitValidate(String model) {
-        Object response = jitbpmnService.validateProcess(model);
-        return Response.ok(response).build();
+    @Path("/signal/")
+    public Response startProcessInstanceByProcessId(SendEventRequest request) {
+        jitProcessService.signal(request.getEvent(), request.getPayload());
+        return Response.ok().build();
     }
 
 }

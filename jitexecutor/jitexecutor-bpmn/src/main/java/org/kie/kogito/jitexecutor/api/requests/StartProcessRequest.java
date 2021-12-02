@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.runner;
+package org.kie.kogito.jitexecutor.api.requests;
 
-import org.kie.kogito.jitexecutor.process.api.ProcessResourceTest;
+import java.util.Map;
 
-import io.quarkus.test.junit.NativeImageTest;
+public class StartProcessRequest {
 
-@NativeImageTest
-public class NativeJITBPMNResourceIT extends ProcessResourceTest {
-    // Execute the same tests but in native mode.
+    private Map<String, Object> parameters;
+
+    public StartProcessRequest() {
+        // do nothing
+    }
+
+    public StartProcessRequest(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 }

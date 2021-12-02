@@ -14,7 +14,7 @@
   <bpmn2:itemDefinition id="__4CCDF6F5-71A3-4116-9F4B-B476EC21C8D7_NotStartedNotifyInputXItem" structureRef="Object"/>
   <bpmn2:itemDefinition id="__4CCDF6F5-71A3-4116-9F4B-B476EC21C8D7_NotCompletedNotifyInputXItem" structureRef="Object"/>
   <bpmn2:itemDefinition id="__4CCDF6F5-71A3-4116-9F4B-B476EC21C8D7_yOutputXItem" structureRef="String"/>
-  <bpmn2:process id="test" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="test" isExecutable="true" processType="Public">
+  <bpmn2:process id="test.userTask" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="test" isExecutable="true" processType="Public">
     <bpmn2:property id="x" itemSubjectRef="_xItem" name="x">
       <bpmn2:extensionElements>
         <drools:metaData name="customTags">

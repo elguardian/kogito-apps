@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.runner;
+package org.kie.kogito.jitexecutor.process;
 
-import org.kie.kogito.jitexecutor.process.api.ProcessResourceTest;
+public interface ProcessFactory {
 
-import io.quarkus.test.junit.NativeImageTest;
+    boolean accept(ProcessFile processFile);
 
-@NativeImageTest
-public class NativeJITBPMNResourceIT extends ProcessResourceTest {
-    // Execute the same tests but in native mode.
-}
+    ProcessBuild createProcessDefinition(ProcessFile processFile);
+
+} 

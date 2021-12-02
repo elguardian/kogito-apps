@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jitexecutor.runner;
+package org.kie.kogito.jitexecutor.api.responses;
 
-import org.kie.kogito.jitexecutor.process.api.ProcessResourceTest;
+public class IdentifierResponse {
 
-import io.quarkus.test.junit.NativeImageTest;
+    private String id;
 
-@NativeImageTest
-public class NativeJITBPMNResourceIT extends ProcessResourceTest {
-    // Execute the same tests but in native mode.
+    public IdentifierResponse() {
+        // do nothing
+    }
+
+    public IdentifierResponse(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
