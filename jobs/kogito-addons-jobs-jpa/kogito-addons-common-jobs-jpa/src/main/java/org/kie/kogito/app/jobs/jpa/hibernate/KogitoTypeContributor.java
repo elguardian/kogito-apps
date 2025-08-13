@@ -26,6 +26,7 @@ import org.hibernate.dialect.PostgreSQLJsonPGObjectJsonbType;
 import org.hibernate.engine.jdbc.spi.JdbcServices;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.SqlTypes;
+import org.hibernate.type.descriptor.jdbc.JsonAsStringJdbcType;
 import org.hibernate.usertype.UserTypeSupport;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -37,15 +38,17 @@ public class KogitoTypeContributor implements TypeContributor {
         JdbcServices jdbcServices = serviceRegistry.getService(JdbcServices.class);
         Dialect dialect = jdbcServices.getDialect();
         // only register if we have the postgresql support
-        UserTypeSupport<ObjectNode> userTypeSupport;
-        if (dialect instanceof PostgreSQLDialect) {
-            typeContributions.getTypeConfiguration().getJdbcTypeRegistry().addDescriptor(SqlTypes.JSON, new PostgreSQLJsonPGObjectJsonbType());
-            userTypeSupport = new JsonBinaryUserType();
-        } else {
-            userTypeSupport = new JsonStringUserType();
-        }
+        UserTypeSupport<ObjectNode> userTypeSupport = new JsonUserType();
         userTypeSupport.setTypeConfiguration(typeContributions.getTypeConfiguration());
         typeContributions.contributeType(userTypeSupport);
+
+        // we tell the contributions how to map the json type to a column
+        if (dialect instanceof PostgreSQLDialect) {
+            typeContributions.getTypeConfiguration().getJdbcTypeRegistry().addDescriptor(SqlTypes.JSON, new PostgreSQLJsonPGObjectJsonbType());
+        } else {
+            typeContributions.getTypeConfiguration().getJdbcTypeRegistry().addDescriptor(SqlTypes.JSON, JsonAsStringJdbcType.NVARCHAR_INSTANCE);
+        }
+
     }
 
 }

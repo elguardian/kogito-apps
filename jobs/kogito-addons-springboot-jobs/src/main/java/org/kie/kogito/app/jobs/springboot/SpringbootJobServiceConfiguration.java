@@ -27,6 +27,8 @@ import org.kie.kogito.app.jobs.spi.JobStore;
 import org.kie.kogito.app.jobs.spi.memory.MemoryJobContextFactory;
 import org.kie.kogito.app.jobs.spi.memory.MemoryJobStore;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
+import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.usertask.UserTasks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,12 @@ public class SpringbootJobServiceConfiguration {
 
     @Autowired(required = false)
     UserTasks userTasks;
+
+    @Bean
+    @ConditionalOnMissingBean(UnitOfWorkManager.class)
+    public UnitOfWorkManager unitOfWorkManagerProducer() {
+        return new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
+    }
 
     @Bean
     @ConditionalOnMissingBean(JobStore.class)

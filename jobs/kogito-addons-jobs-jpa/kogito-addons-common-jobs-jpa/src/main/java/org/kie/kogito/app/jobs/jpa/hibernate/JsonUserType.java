@@ -16,20 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.kie.kogito.app.jobs.springboot;
+package org.kie.kogito.app.jobs.jpa.hibernate;
 
-import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
-import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
-import org.kie.kogito.uow.UnitOfWorkManager;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.usertype.UserTypeSupport;
 
-@SpringBootConfiguration
-public class UnitOfWorkConfiguration {
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-    @Bean
-    public UnitOfWorkManager unitOfWorkManagerProducer() {
-        return new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory());
+public class JsonUserType extends UserTypeSupport<ObjectNode> {
+
+    public JsonUserType() {
+        super(ObjectNode.class, SqlTypes.JSON);
     }
-
 }

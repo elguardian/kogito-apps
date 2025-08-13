@@ -20,6 +20,9 @@ package org.kie.kogito.app.jobs.jpa.model;
 
 import java.time.OffsetDateTime;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.persistence.Column;
@@ -60,8 +63,10 @@ public class JobDetailsEntity {
 
     private Integer priority;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     private ObjectNode recipient;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     private ObjectNode trigger;
 
     @Column(name = "fire_time")
