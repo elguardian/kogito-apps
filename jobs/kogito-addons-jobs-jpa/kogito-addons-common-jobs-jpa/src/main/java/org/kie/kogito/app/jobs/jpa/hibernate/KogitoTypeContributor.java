@@ -26,10 +26,14 @@ import org.hibernate.dialect.PostgreSQLJsonPGObjectJsonbType;
 import org.hibernate.engine.jdbc.spi.JdbcServices;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.SqlTypes;
+import org.hibernate.type.descriptor.java.ImmutableMutabilityPlan;
+import org.hibernate.type.descriptor.java.spi.JsonJavaType;
 import org.hibernate.type.descriptor.jdbc.JsonAsStringJdbcType;
 import org.hibernate.usertype.UserTypeSupport;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.vertx.core.json.JsonObject;
 
 public class KogitoTypeContributor implements TypeContributor {
 
@@ -46,7 +50,12 @@ public class KogitoTypeContributor implements TypeContributor {
         if (dialect instanceof PostgreSQLDialect) {
             typeContributions.getTypeConfiguration().getJdbcTypeRegistry().addDescriptor(SqlTypes.JSON, new PostgreSQLJsonPGObjectJsonbType());
         } else {
+            JsonJavaType<JsonObject> jsonJavaType = new JsonJavaType<JsonObject>(
+                    JsonObject.class,
+                    new ImmutableMutabilityPlan<JsonObject>(),
+                    typeContributions.getTypeConfiguration());
             typeContributions.getTypeConfiguration().getJdbcTypeRegistry().addDescriptor(SqlTypes.JSON, JsonAsStringJdbcType.NVARCHAR_INSTANCE);
+            typeContributions.getTypeConfiguration().getJavaTypeRegistry().addDescriptor(jsonJavaType);
         }
 
     }
