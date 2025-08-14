@@ -35,8 +35,6 @@ import org.kie.kogito.app.jobs.spi.JobStore;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,8 +48,6 @@ import jakarta.annotation.PreDestroy;
 @Service
 @Transactional
 public class SpringbootJobsService implements JobsService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SpringbootJobsService.class);
 
     protected JobScheduler jobScheduler;
 
@@ -69,6 +65,9 @@ public class SpringbootJobsService implements JobsService {
 
     @Autowired
     protected JobContextFactory jobContextFactory;
+
+    @Value("${kogito.jobs-service.numberOfWorkerThreads:10}")
+    protected Integer numberOfWorkerThreads;
 
     @Value("${kogito.jobs-service.maxNumberOfRetries:3}")
     protected Integer maxNumberOfRetries;
@@ -121,20 +120,10 @@ public class SpringbootJobsService implements JobsService {
                 .withMaxNumberOfRetries(maxNumberOfRetries)
                 .withRefreshJobsInterval(maxRefreshJobsIntervalWindow * 60 * 1000L)
                 .withTimeoutInterceptor(txInterceptor)
+                .withNumberOfWorkerThreads(numberOfWorkerThreads)
                 .build();
         this.jobScheduler.init();
 
-        LOG.info("Initializing Job Service Logic \n" +
-                "MaxRefreshJobsIntervalWindow: {} (millis)\n" +
-                "MaxIntervalLimitToRetryMillis: {} (millis)\n" +
-                "MaxNumberOfRetries: {}\n" +
-                "RefreshJobsInterval: {} (millis)\n" +
-                "Store: {}",
-                maxRefreshJobsIntervalWindow * 60 * 1000L,
-                maxIntervalLimitToRetryMillis,
-                maxNumberOfRetries,
-                maxRefreshJobsIntervalWindow * 60 * 1000L,
-                jobStore);
     }
 
     private <T> List<T> ofNullable(List<T> list) {

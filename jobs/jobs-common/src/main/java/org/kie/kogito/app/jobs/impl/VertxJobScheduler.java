@@ -91,6 +91,8 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
 
     private Long retryInterval;
 
+    public Integer numberOfWorkerThreads;
+
     public class VertxJobSchedulerBuilder implements JobSchedulerBuilder {
 
         @Override
@@ -165,6 +167,12 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
             return this;
         }
 
+        @Override
+        public JobSchedulerBuilder withNumberOfWorkerThreads(Integer numberOfWorkerThreads) {
+            VertxJobScheduler.this.numberOfWorkerThreads = numberOfWorkerThreads;
+            return this;
+        }
+
     }
 
     public VertxJobScheduler() {
@@ -178,6 +186,7 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
         this.jobSchedulerListeners = new ArrayList<>();
         this.interceptors = new ArrayList<>();
 
+        this.numberOfWorkerThreads = 10;
         this.maxNumberOfRetries = 3;
         this.refreshJobsInterval = 1000L;
         this.retryInterval = 10 * 1000L; // ten seconds
@@ -253,9 +262,23 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
     @Override
     public void init() {
         this.vertx = Vertx.builder().build();
-        this.workerExecutor = this.vertx.createSharedWorkerExecutor("Jobs", 10);
+        this.workerExecutor = this.vertx.createSharedWorkerExecutor("Jobs", numberOfWorkerThreads);
         this.maxRefreshJobsIntervalWindow = Math.max(maxRefreshJobsIntervalWindow, refreshJobsInterval);
         this.refreshJobsIntervalTimerId = this.vertx.setPeriodic(0L, refreshJobsInterval, this);
+
+        LOG.info("Initializing Job Service Logic \n" +
+                "MaxRefreshJobsIntervalWindow: {} (millis)\n" +
+                "MaxIntervalLimitToRetryMillis: {} (millis)\n" +
+                "MaxNumberOfRetries: {}\n" +
+                "RefreshJobsInterval: {} (millis)\n" +
+                "Number of worker threads {}\n" +
+                "Store: {}",
+                maxRefreshJobsIntervalWindow,
+                retryInterval,
+                maxNumberOfRetries,
+                refreshJobsInterval,
+                numberOfWorkerThreads,
+                jobStore);
     }
 
     @Override

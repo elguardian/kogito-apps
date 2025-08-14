@@ -34,8 +34,6 @@ import org.kie.kogito.app.jobs.spi.JobStore;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.runtime.Startup;
@@ -51,8 +49,6 @@ import jakarta.transaction.Transactional;
 @Singleton
 @Startup
 public class QuarkusJobsService implements JobsService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(QuarkusJobsService.class);
 
     protected JobScheduler jobScheduler;
 
@@ -70,6 +66,9 @@ public class QuarkusJobsService implements JobsService {
 
     @Inject
     protected Instance<JobSchedulerListener> jobSchedulerListeners;
+
+    @ConfigProperty(name = "kogito.jobs-service.numberOfWorkerThreads", defaultValue = "10")
+    protected Integer numberOfWorkerThreads;
 
     @ConfigProperty(name = "kogito.jobs-service.maxNumberOfRetries", defaultValue = "3")
     protected Integer maxNumberOfRetries;
@@ -111,20 +110,10 @@ public class QuarkusJobsService implements JobsService {
                 .withMaxNumberOfRetries(maxNumberOfRetries)
                 .withRefreshJobsInterval(maxRefreshJobsIntervalWindow * 60 * 1000L)
                 .withTimeoutInterceptor(txInterceptor)
+                .withNumberOfWorkerThreads(numberOfWorkerThreads)
                 .build();
         this.jobScheduler.init();
 
-        LOG.info("Initializing Job Service Logic \n" +
-                "MaxRefreshJobsIntervalWindow: {} (millis)\n" +
-                "MaxIntervalLimitToRetryMillis: {} (millis)\n" +
-                "MaxNumberOfRetries: {}\n" +
-                "RefreshJobsInterval: {} (millis)\n" +
-                "Store: {}",
-                maxRefreshJobsIntervalWindow * 60 * 1000L,
-                maxIntervalLimitToRetryMillis,
-                maxNumberOfRetries,
-                maxRefreshJobsIntervalWindow * 60 * 1000L,
-                jobStore);
     }
 
     @PreDestroy

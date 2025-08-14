@@ -52,4 +52,6 @@ public interface JobSchedulerBuilder {
     JobSchedulerBuilder withRetryInterval(Long retryInterval);
 
     JobSchedulerBuilder withTimeoutInterceptor(JobTimeoutInterceptor... interceptors);
+
+    JobSchedulerBuilder withNumberOfWorkerThreads(Integer numberOfWorkerThreads);
 }
