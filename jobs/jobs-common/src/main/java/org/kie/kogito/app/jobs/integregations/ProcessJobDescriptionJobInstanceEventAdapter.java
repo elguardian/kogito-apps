@@ -25,6 +25,10 @@ import org.kie.kogito.jobs.service.model.JobDetails;
 
 public class ProcessJobDescriptionJobInstanceEventAdapter extends AbstractJobDescriptionJobInstanceEventAdapter {
 
+    public ProcessJobDescriptionJobInstanceEventAdapter(String serviceURL) {
+        super(serviceURL);
+    }
+
     @Override
     public boolean accept(JobDetails jobDetails) {
         return extractJobDescription(jobDetails) instanceof ProcessJobDescription;

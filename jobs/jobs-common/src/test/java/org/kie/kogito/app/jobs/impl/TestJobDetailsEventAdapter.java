@@ -25,6 +25,10 @@ import org.kie.kogito.jobs.service.model.JobDetails;
 
 public class TestJobDetailsEventAdapter extends AbstractJobDescriptionJobInstanceEventAdapter {
 
+    public TestJobDetailsEventAdapter() {
+        super("http://localhost:8080");
+    }
+
     @Override
     public boolean accept(JobDetails jobDetails) {
         return extractJobDescription(jobDetails) instanceof TestJobDescription;

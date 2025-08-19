@@ -42,9 +42,12 @@ public abstract class AbstractJobDescriptionJobInstanceEventAdapter implements J
 
     private ObjectMapper objectMapper;
 
-    public AbstractJobDescriptionJobInstanceEventAdapter() {
+    private String serviceURL;
+
+    public AbstractJobDescriptionJobInstanceEventAdapter(String serviceURL) {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.serviceURL = serviceURL;
     }
 
     @Override
@@ -52,7 +55,10 @@ public abstract class AbstractJobDescriptionJobInstanceEventAdapter implements J
         try {
             ScheduledJob scheduledJob = toScheduleJob(jobDetails);
             byte[] jsonContent = objectMapper.writeValueAsBytes(scheduledJob);
-            JobInstanceDataEvent jobInstanceEvent = new JobInstanceDataEvent(JOB_EVENT_TYPE, null, jsonContent,
+            JobInstanceDataEvent jobInstanceEvent = new JobInstanceDataEvent(
+                    JOB_EVENT_TYPE,
+                    serviceURL,
+                    jsonContent,
                     scheduledJob.getProcessInstanceId(), scheduledJob.getRootProcessInstanceId(),
                     scheduledJob.getProcessId(), scheduledJob.getRootProcessId(), null);
             return jobInstanceEvent;

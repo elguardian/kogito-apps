@@ -29,6 +29,7 @@ import org.kie.kogito.app.jobs.api.JobTimeoutInterceptor;
 import org.kie.kogito.app.jobs.integregations.ProcessInstanceJobDescriptionJobInstanceEventAdapter;
 import org.kie.kogito.app.jobs.integregations.ProcessJobDescriptionJobInstanceEventAdapter;
 import org.kie.kogito.app.jobs.integregations.UserTaskInstanceJobDescriptionJobInstanceEventAdapter;
+import org.kie.kogito.app.jobs.quarkus.resource.RestApiConstants;
 import org.kie.kogito.app.jobs.spi.JobContextFactory;
 import org.kie.kogito.app.jobs.spi.JobStore;
 import org.kie.kogito.event.EventPublisher;
@@ -79,6 +80,9 @@ public class QuarkusJobsService implements JobsService {
     @ConfigProperty(name = "kogito.jobs-service.schedulerChunkInMinutes", defaultValue = "10")
     protected Long maxRefreshJobsIntervalWindow;
 
+    @ConfigProperty(name = "kogito.service.url", defaultValue = "http://localhost:8080")
+    protected String serviceURL;
+
     @PostConstruct
     public void init() {
         JobTimeoutInterceptor txInterceptor = new JobTimeoutInterceptor() {
@@ -101,9 +105,9 @@ public class QuarkusJobsService implements JobsService {
                 .withJobStore(jobStore)
                 .withJobContextFactory(jobContextFactory)
                 .withJobEventAdapters(
-                        new ProcessInstanceJobDescriptionJobInstanceEventAdapter(),
-                        new ProcessJobDescriptionJobInstanceEventAdapter(),
-                        new UserTaskInstanceJobDescriptionJobInstanceEventAdapter())
+                        new ProcessInstanceJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH),
+                        new ProcessJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH),
+                        new UserTaskInstanceJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH))
                 .withJobExecutors(jobExecutors.stream().toArray(JobExecutor[]::new))
                 .withMaxRefreshJobsIntervalWindow(maxRefreshJobsIntervalWindow * 60 * 1000L)
                 .withRetryInterval(maxIntervalLimitToRetryMillis)

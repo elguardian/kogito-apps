@@ -32,6 +32,7 @@ import org.kie.kogito.app.jobs.integregations.ProcessJobDescriptionJobInstanceEv
 import org.kie.kogito.app.jobs.integregations.UserTaskInstanceJobDescriptionJobInstanceEventAdapter;
 import org.kie.kogito.app.jobs.spi.JobContextFactory;
 import org.kie.kogito.app.jobs.spi.JobStore;
+import org.kie.kogito.app.jobs.springboot.resource.RestApiConstants;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
@@ -78,6 +79,9 @@ public class SpringbootJobsService implements JobsService {
     @Value("${kogito.jobs-service.schedulerChunkInMinutes:10}")
     protected Long maxRefreshJobsIntervalWindow;
 
+    @Value("${kogito.service.url:http://localhost:8080}")
+    protected String serviceURL;
+
     @Autowired
     private PlatformTransactionManager transactionManager;
 
@@ -111,9 +115,9 @@ public class SpringbootJobsService implements JobsService {
                 .withJobStore(jobStore)
                 .withJobContextFactory(jobContextFactory)
                 .withJobEventAdapters(
-                        new ProcessInstanceJobDescriptionJobInstanceEventAdapter(),
-                        new ProcessJobDescriptionJobInstanceEventAdapter(),
-                        new UserTaskInstanceJobDescriptionJobInstanceEventAdapter())
+                        new ProcessInstanceJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH),
+                        new ProcessJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH),
+                        new UserTaskInstanceJobDescriptionJobInstanceEventAdapter(serviceURL + RestApiConstants.JOBS_PATH))
                 .withJobExecutors(ofNullable(jobExecutors).toArray(JobExecutor[]::new))
                 .withMaxRefreshJobsIntervalWindow(maxRefreshJobsIntervalWindow * 60 * 1000L)
                 .withRetryInterval(maxIntervalLimitToRetryMillis)
