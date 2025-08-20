@@ -19,8 +19,8 @@
 package org.kie.kogito.app.jobs.springboot;
 
 import org.kie.kogito.app.jobs.api.JobExecutor;
-import org.kie.kogito.app.jobs.integregations.ProccessInstanceJobExecutor;
-import org.kie.kogito.app.jobs.integregations.ProccessJobExecutor;
+import org.kie.kogito.app.jobs.integregations.ProcessInstanceJobExecutor;
+import org.kie.kogito.app.jobs.integregations.ProcessJobExecutor;
 import org.kie.kogito.app.jobs.integregations.UserTaskInstanceJobExecutor;
 import org.kie.kogito.app.jobs.spi.JobContextFactory;
 import org.kie.kogito.app.jobs.spi.JobStore;
@@ -74,13 +74,13 @@ public class SpringbootJobServiceConfiguration {
     @Bean
     @ConditionalOnBean({ Processes.class, UnitOfWorkManager.class })
     public JobExecutor produceProcessJobExecutor() {
-        return new ProccessJobExecutor(processes, unitOfWorkManager);
+        return new ProcessJobExecutor(processes, unitOfWorkManager);
     }
 
     @Bean
     @ConditionalOnBean({ Processes.class, UnitOfWorkManager.class })
     public JobExecutor produceProcessInstanceJobExecutor() {
-        return new ProccessInstanceJobExecutor(processes, unitOfWorkManager);
+        return new ProcessInstanceJobExecutor(processes, unitOfWorkManager);
     }
 
     @Bean

@@ -46,6 +46,7 @@ import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.service.model.JobDetails;
 import org.kie.kogito.jobs.service.model.JobStatus;
 import org.kie.kogito.jobs.service.utils.DateUtil;
+import org.kie.kogito.timer.impl.SimpleTimerTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,7 +210,7 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
     }
 
     private void syncWithJobStores() {
-        LOG.debug("Syncyng jobs");
+        LOG.debug("Syncing jobs with job store");
         ZonedDateTime now = Instant.now().atZone(DateUtil.DEFAULT_ZONE).plus(Duration.ofMillis(maxRefreshJobsIntervalWindow));
         Date maxWindowsLoad = Date.from(now.toInstant());
         JobContext jobContext = jobContextFactory.newContext();
@@ -461,8 +462,13 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
     }
 
     private JobDetails computeNextJobDetailsIfAny(JobDetails jobDetails) {
+        // there is a problem here. If we retried the job the origin, the current time is different.
+        // so we set the current time as the time of execution so we do execute things at fixed interval time.
+        ((SimpleTimerTrigger) jobDetails.getTrigger()).setNextFireTime(Date.from(Instant.now()));
+
         jobDetails.getTrigger().nextFireTime();
         if (jobDetails.getTrigger().hasNextFireTime() != null) {
+
             JobDetails nextJobDetails = JobDetails.builder().of(jobDetails)
                     .status(JobStatus.SCHEDULED)
                     .retries(0)

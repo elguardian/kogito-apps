@@ -20,41 +20,42 @@ package org.kie.kogito.app.jobs.integregations;
 
 import org.kie.kogito.app.jobs.api.JobExecutor;
 import org.kie.kogito.app.jobs.impl.JobDetailsHelper;
-import org.kie.kogito.jobs.descriptors.ProcessInstanceJobDescription;
+import org.kie.kogito.jobs.descriptors.ProcessJobDescription;
 import org.kie.kogito.jobs.service.model.JobDetails;
+import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.SignalFactory;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
-public class ProccessInstanceJobExecutor implements JobExecutor {
+public class ProcessJobExecutor implements JobExecutor {
     public static final String SIGNAL = "timerTriggered";
 
     private Processes processes;
 
     private UnitOfWorkManager uom;
 
-    public ProccessInstanceJobExecutor(Processes processes, UnitOfWorkManager unitOfWorkManager) {
+    public ProcessJobExecutor(Processes processes, UnitOfWorkManager unitOfWorkManager) {
         this.processes = processes;
         this.uom = unitOfWorkManager;
     }
 
     @Override
     public boolean accept(JobDetails jobDetails) {
-        return JobDetailsHelper.extractJobDescription(jobDetails) instanceof ProcessInstanceJobDescription;
+        return JobDetailsHelper.extractJobDescription(jobDetails) instanceof ProcessJobDescription;
     }
 
     @Override
     public void execute(JobDetails jobDetails) {
-        ProcessInstanceJobDescription processJobDescription = (ProcessInstanceJobDescription) JobDetailsHelper.extractJobDescription(jobDetails);
+        ProcessJobDescription processJobDescription = (ProcessJobDescription) JobDetailsHelper.extractJobDescription(jobDetails);
 
         UnitOfWorkExecutor.executeInUnitOfWork(uom, () -> {
-            processes.processByProcessInstanceId(processJobDescription.processInstanceId()).ifPresent(processes -> {
-                processes.instances().findById(processJobDescription.processInstanceId()).ifPresent(pi -> {
-                    pi.send(SignalFactory.of(SIGNAL, TimerInstance.with(jobDetails.getId(), processJobDescription.timerId(), jobDetails.getRetries())));
-                });
-            });
+            Process<?> processDefinition = processes.processById(processJobDescription.processId());
+            if (processDefinition == null) {
+                return null;
+            }
+            processDefinition.send(SignalFactory.of(SIGNAL, TimerInstance.with(jobDetails.getId(), jobDetails.getId(), -1)));
             return null;
         });
     }
