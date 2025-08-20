@@ -17,23 +17,8 @@
  * under the License.
  */
 
-create table job_details
-(
-    id                     varchar(50) primary key,
-    correlation_id         varchar(50),
-    priority               integer,
-    status                 varchar(40),
-    scheduled_id           varchar(40),
-    retries                integer,
-    recipient              CHARACTER VARYING(5000),
-    trigger                CHARACTER VARYING(5000),
-    fire_time              timestamp,
-    execution_counter      integer,
-    execution_timeout      bigint,
-    execution_timeout_unit varchar(40),
-    created                timestamp,
-    last_update            timestamp
-);
+ALTER TABLE job_details
+    ALTER COLUMN id TYPE varchar(50);
 
-create index job_details_fire_time_idx on job_details (fire_time);
-create index job_details_created_idx on job_details (created);
+ALTER TABLE job_details
+    ALTER COLUMN correlation_id TYPE varchar(50);

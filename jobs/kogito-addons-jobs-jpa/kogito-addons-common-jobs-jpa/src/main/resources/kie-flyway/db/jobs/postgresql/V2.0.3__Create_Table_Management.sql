@@ -16,33 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-CREATE TYPE JOB_STATUS AS ENUM
-(
-  'ERROR',
-  'EXECUTED',
-  'RUNNING',
-  'SCHEDULED',
-  'RETRY',
-  'CANCELED'
-);
 
-CREATE TABLE job_details
+CREATE TABLE job_service_management
 (
-  id VARCHAR(50) PRIMARY KEY,
-  correlation_id VARCHAR(50),
-  status VARCHAR(40),
-  created TIMESTAMPTZ,
-  last_update TIMESTAMPTZ,
-  retries INT4,
-  execution_counter INT4,
-  scheduled_id VARCHAR(40),
-  priority INT4,
-  recipient JSONB,
-  trigger JSONB,
-  execution_timeout BIGINT,
-  execution_timeout_unit VARCHAR(40),
-  fire_time TIMESTAMPTZ
+  id VARCHAR(40) PRIMARY KEY,
+  last_heartbeat TIMESTAMPTZ,
+  token VARCHAR(40) UNIQUE
 );
-
-create index job_details_fire_time_idx on job_details (fire_time);
-create index job_details_created_idx on job_details (created);
