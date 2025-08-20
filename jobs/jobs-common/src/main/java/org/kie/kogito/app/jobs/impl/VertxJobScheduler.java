@@ -215,9 +215,11 @@ public class VertxJobScheduler implements JobScheduler, Handler<Long> {
         Date maxWindowsLoad = Date.from(now.toInstant());
         JobContext jobContext = jobContextFactory.newContext();
         List<JobDetails> jobDetailsList = jobStore.loadActiveJobs(jobContext, maxWindowsLoad);
+        LOG.debug("Syncing {} jobs with job store", jobDetailsList.size());
 
         // this cover scenarios where the database jobs are already stored
         for (JobDetails currentJobDetails : jobDetailsList) {
+            LOG.debug("Checking job {}", currentJobDetails.getId());
             jobsScheduled.compute(currentJobDetails.getId(), (jobId, timerInfo) -> {
                 if (timerInfo == null) {
                     // we schedule this (no need to trigger an event as it was already trigger during scheduling)
